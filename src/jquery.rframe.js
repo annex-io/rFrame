@@ -71,11 +71,16 @@
 			}
 		}, options);
 
-		if (rframe.hash != "#rFrame") {
-			/*
-			 * Set hash to prevent further rFrame execution
-			 */
-			window.location.hash = "#rFrame";
+	    /*
+         * hash driven
+         */
+	    if (rframe.hash) rframe.device = window.location.hash.replace('#', '');
+	    
+	    if (performance.navigation.type == 1 || !rframe.hash) {
+	        /*
+             * hash is empty
+             */ 
+	        if (!rframe.hash) window.location.hash = rframe.device;
 			/*
 			 *	Set current href as reference for iFrame
 			 */
@@ -209,18 +214,28 @@
 				'height':$('html').height(),
 				'min-height':'100%',
 				'min-width':'100%'
-			});
+            });
+            /*
+             * wrapper is phone
+             */
+            rframe.iFrameWrapper = $('<div id="iFrameWrap" />').css({
+                width: rframe.width,
+                height: rframe.height,
+                "background-color": rframe.device_color,
+                "border-radius": rframe.radius + "px",
+                margin: rframe.topmargin + "px auto 0",
+                padding: rframe.toppad + "px " + rframe.rightsidepad + "px " + rframe.bottompad + "px " + rframe.leftsidepad + "px",
+            });
+            
 			/*
-			 * Create iFrame as per the options
+			 * Create iFrame as per the options -  iframe is screen size;
 			 */
 			rframe.iFrame = $('<iframe src="' + rframe.reference + '"/>').css({
-				'background-color':rframe.device_color,
+				'background-color':'#ffffff',
 				'border':'none',
-				'border-radius': rframe.radius + 'px',
 				'display': 'block',
 				'height':rframe.height,
-				'margin': rframe.topmargin + 'px auto 0',
-				'padding': rframe.toppad + 'px ' + rframe.rightsidepad + 'px ' + rframe.bottompad + 'px '+ rframe.leftsidepad + 'px',
+				'margin': 'auto',
 				'width':rframe.width,
 			});
 			/*
@@ -242,12 +257,12 @@
 			/*
 			 * Smash the DOM elements together
 			 */
-			rframe.rFrame = rframe.wrapper.append(rframe.toolbar,rframe.iFrame);
+            rframe.rFrame = rframe.wrapper.append(rframe.toolbar, rframe.iFrameWrapper.append(rframe.iFrame));
 			/* 
 			 * Implement
 			 */ 
-			$('body').html(rframe.rFrame);
-			rframe.setSelect();
+			$('body').html(rframe.rFrame);			
 		}
+		rframe.setSelect();
 	};
 })(jQuery);
